@@ -1,0 +1,48 @@
+<script type="text/javascript">
+    let POSTNUM = 6;
+    var pics;
+    var captions;
+    var JSON;
+    var loaded = false;
+
+jQuery(document).load(function(){
+   console.log(document.getElementsByClassName("journal-post")[0]); 
+});
+
+jQuery( document ).ajaxStop(function() {
+    jQuery.getJSON( "http://newhome.btconferences.org/wp-content/themes/foundry/rss-parser.php", function(data){
+        if(loaded)
+            return;
+        loaded = true;
+        
+        JSON = data;
+        pics = document.getElementsByClassName("journal-post");
+        captions = document.getElementsByClassName("journal-title");
+        hovers = document.getElementsByClassName("journal-hover");
+        
+        var maxHeight = 0;
+        
+        var i;
+        for(i=0; i<POSTNUM; i++){
+            pics[i].style.backgroundImage = "url('" + data[i].pic + "')";
+            pics[i].children[0].src = data[i].pic;
+            
+            hovers[i].children[0].href = data[i].link;
+            hovers[i].children[0].classList.remove('vc-zone-link');
+            hovers[i].onclick = function(){window.open(data[i].link,"_blank")};
+            
+            captions[i].children[0].innerHTML = data[i].title;
+            var height = captions[i].children[0].clientHeight;
+            if(height > maxHeight){
+                maxHeight = height;
+            }
+        }
+        
+        /* fix caption heights */
+        for(i=0; i<POSTNUM; i++){
+            captions[i].children[0].style.height = maxHeight + "px";
+            captions[i].children[0].style.marginBottom = "0px";
+        }
+    });
+});
+</script>
